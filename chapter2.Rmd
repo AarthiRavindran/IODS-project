@@ -1,7 +1,16 @@
-# Insert chapter 2 title here
+##**RStudio Exercise 1: Tasks and Instructions**
 
-*Describe the work you have done this week and summarize your learning.*
+This week was introduction class and hence it was all about getting familar with Rstudio, Github and Datacamp. I did following task like,   
+ **1. installation of tools**  
+   * R  
+   * RStudio  
+   * GitHub  
+ **2. Creating course templates**  
+   * GitHub  
+   * RStudio  
+ **3. Learing R on Datacamp**  
+    *Part:1 Hello R  
+    *Part:2 Getting Hooked on R  
+ **4. Rstudio Excercise1: Tasks and Instructions**  
+    *In this excercise, IODs project from Github is forked into my github project. It was then opened in Rstudio to edit the index.Rmd, chapter1.Rmd and chapter2.Rmd and filling the required information. The edited files are saved and knitted for updation. The saved and knit files are updated in Git from Rstudio using commit (everytime note the changes in commit) and push options. Once the updation is done, refresh your github project page and look for the changes you have made.  
 
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using.

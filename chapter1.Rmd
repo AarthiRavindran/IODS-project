@@ -1,4 +1,7 @@
 
-# About the project
+#**`IODS Course Project`**
 
-*Write a short description about the course and add a link to your GitHub repository here. This is an R Markdown (.Rmd) file so you can use R Markdown syntax.*
+##**Introduction**  
+Hi, I am Aarthi Ravindran, doing PhD in **University of Eastern Finland**. I herd *about this course from AIVI coordinators*, they circulated mail in UEF. In todays science field, we have `excess of open data`. If we learn the of art of dealing open data science then we can utlize them to our research.  
+
+[Aarthi Ravindran Projec link](https://aarthiravindran.github.io/IODS-project/)
