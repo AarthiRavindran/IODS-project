@@ -2,6 +2,7 @@
 #**`IODS Course Project`**
 
 ##**Introduction**  
-Hi, I am Aarthi Ravindran, doing PhD in **University of Eastern Finland**. I herd *about this course from AIVI coordinators*, they circulated mail in UEF. In todays science field, we have `excess of open data`. If we learn the of art of dealing open data science then we can utlize them to our research.  
+Hi, I am Aarthi Ravindran, doing PhD in **University of Eastern Finland**. I heard *about this course from AIVI coordinators*, they circulated mail in UEF. In todays science field, we have `excess of open data`. If we learn the of art of dealing open data science then we can utlize them to our research. Click the link below to see my github repository and course diary webpage.  
 
-[Aarthi Ravindran Projec link](https://aarthiravindran.github.io/IODS-project/)
+[Aarthi Ravindran Github repository](https://github.com/AarthiRavindran/IODS-project)  
+[Aarthi Ravindran Course Diary](https://aarthiravindran.github.io/IODS-project/)  
