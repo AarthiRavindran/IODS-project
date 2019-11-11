@@ -14,3 +14,142 @@ This week was introduction class and hence it was all about getting familar with
  **4. Rstudio Excercise1: Tasks and Instructions**  
     *In this excercise, IODs project from Github is forked into my github project. It was then opened in Rstudio to edit the index.Rmd, chapter1.Rmd and chapter2.Rmd and filling the required information. The edited files are saved and knitted for updation. The saved and knit files are updated in Git from Rstudio using commit (everytime note the changes in commit) and push options. Once the updation is done, refresh your github project page and look for the changes you have made.  
 
+##**RStudio Exercise 2: Regression and Model Validation**
+
+This week we started with doing data wrangling and with obtained data further regression and model validation is done.  
+
+**1. Data Wrangling or Data Subsetting**
+OVerhere, the data is subsetted into simple data for further regression analysis. The major data of 183 row with 60 columns are subset into 166 rows and 7 columns.  
+This subset data is stored in https://github.com/AarthiRavindran/IODS-project/data/  
+  
+  Let's read the data and explore its dimension and structure.
+```{r Question}
+# Exercise:1 Data Analysis
+# Read the students2014 data into R either from your local folder (if you completed the Data wrangling part) or from this url: http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt . (The separator is a comma "," and the file includes a header). Explore the structure and the dimensions of the data and describe the dataset briefly, assuming the reader has no previous knowledge of it. There is information related to the data here. (0-2 points)
+```
+
+``` {r readdata,echo=TRUE,results='hide',message=FALSE,warning=FALSE}
+#Read the data
+setwd("~/IODS-project/")
+library(dplyr)
+learning2014 <- read.table("~/IODS-project/data/learning2014.txt")
+```
+Explore the data by using dimension, structure and header commands
+```{r datastructure}
+# Explore the data
+dim(learning2014)
+```
+
+```{r dimension}
+str(learning2014)
+```
+
+```{r header}
+head(learning2014)
+```
+```{r summary}
+summary(learning2014)
+```
+
+By exploring data, it has the columns like age, gender, attitude, deep questions, strategy questions, surface questions and points. The data has 166 rows and 7 columns. This data has 110 females and 56 males with minimum age of 17 and maximum age of 55. 
+
+*Graphical Overview*
+```{r question2}
+#Question: 2
+#Show a graphical overview of the data and show summaries of the variables in the data. Describe and interpret the outputs, commenting on the distributions of the variables and the relationships between them. (0-3 points)
+```
+
+```{r graphs}
+pairs(learning2014[!names(learning2014) %in% c("gender")],col=learning2014$gender)
+```
+
+```{r advanced graphs}
+#install.packages("GGally")
+#install.packages("ggplot2")
+library(GGally)
+library(ggplot2)
+
+# create a more advanced plot matrix with ggpairs()
+ggpairs(learning2014, 
+        mapping = aes(col = gender, alpha = 0.3), 
+        lower = list(combo = wrap("facethist", bins = 20))
+        )
+```
+
+*Result command:* We can see the ratio of female gender is high, the minimum age and maximum of each gender various, the attitute, deep, stra are postively correlated to age whereas surf and points are negatively correlated to age, likewise we can see for each variables. The highesh correlation is between the points and attitute. deep and surf are having lowest negative correlation between them.  
+
+*2. Linear REgression*
+```{r question3_and_4}
+#Question: 3
+#Choose three variables as explanatory variables and fit a regression model where exam points is the target (dependent) variable. Show a summary of the fitted model and comment and interpret the results. Explain and interpret the statistical test related to the model parameters. If an explanatory variable in your model does not have a statistically significant relationship with the target variable, remove the variable from the model and fit the model again without it. (0-4 points)  
+#Question:4
+#Using a summary of your fitted model, explain the relationship between the chosen explanatory variables and the target variable (interpret the model parameters). Explain and interpret the multiple R squared of the model. (0-3 points)
+```
+Lets take the negatively correlation between the deep and surf and look close into it.
+```{r qplot1}
+qplot(surf, deep, data= learning2014) + geom_smooth(method = "lm")
+```
+Let's check how the linear model to this data works. 
+The equation for the model is
+$$
+Y_i = \alpha + \beta_1 X_i + \epsilon_i
+$$
+whereas,
+Y = surf  
+X = deep  
+$\alpha$ = constant
+$\beta_1$ = regression coefficient for deep  
+$\epsilon$ = random term.
+
+Estimation of the model yields the following results:
+```{r, results1='asis1'}
+my_model1 <- lm(surf ~ deep, data = learning2014)
+results1 <- summary(my_model1)
+knitr::kable(results1$coefficients, digits=3, caption="Regression coefficients")
+```
+
+Intercept as well as deep are not statistically significant predictors. 
+Coefficient of determination $R^2$ = `r results1$r.squared` that is not particularly high.
+
+From above graphs we can see the highest correlation between points and attitute. Let's take them for further analysis.  
+```{r qplot}
+qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
+```
+
+Let's start fitting the linear model for positively correlated Points and attitude which are having highest score too.  
+The equation for the model is
+$$
+Y_i = \alpha + \beta_1 X_i + \epsilon_i
+$$
+whereas,  
+Y = points  
+X = attitude  
+$\alpha$ = constant  
+$\beta_1$ = regression coefficient for attitude  
+$\epsilon$ = random term.
+
+Estimation of the model yields the following results:
+```{r, results='asis'}
+my_model <- lm(points ~ attitude, data = learning2014)
+results <- summary(my_model)
+knitr::kable(results$coefficients, digits=3, caption="Regression coefficients")
+```
+
+Intercept as well as attitude are statistically significant predictors. 
+Coefficient of determination $R^2$ = `r results$r.squared` that is not particularly high.
+Probably some more predictors could be added to the both model studied here.  
+
+*Diagnostic Plots*
+
+```{r question5}
+#Question 5
+#Produce the following diagnostic plots: Residuals vs Fitted values, Normal QQ-plot and Residuals vs Leverage. Explain the assumptions of the model and interpret the validity of those assumptions based on the diagnostic plots. (0-3 points)   
+```
+
+```{r diagnostic_plot}
+#Taking highly correlated variables for diagnostic plot
+plot(my_model, which=c(1,2,5))
+```
+
+*Result:* From diagnostic plot, we can see the outlier. maybe if we remove the outlier, it is possible to get good Rsquare value and the model may fit more efficiently. 
+
