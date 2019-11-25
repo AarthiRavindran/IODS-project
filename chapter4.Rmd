@@ -1,0 +1,247 @@
+#Clustering and classification
+*Aarthi Ravindran.20/11/2019 - RStudio Exercise 4: Tasks and Instructions*
+
+Analysis Exercises - 15 marks
+
+1. Create chapter4.Rmd file and include the child file in ‘index.Rmd’ file.
+2. Load the Boston data from the MASS package and explore the data. (0-1 points)
+3. Show a graphical overview of the data and show summaries of the variables in the data. Describe and interpret the outputs, commenting on the distributions of the variables and the relationships between them. (0-2 points)
+```{r load_Boston_data}
+#load Boston data from Mass package (Exercise 4.2)
+
+#The following R packages are installed already, which are mandatory to run this analysis
+#install.packages("MASS")
+#install.packages("corrr")
+library(MASS)
+library(tidyr)
+library(corrr)
+library(dplyr)
+#install.packages("corrplot")
+library(corrplot)
+#if(!require(devtools)) install.packages("devtools")
+#devtools::install_github("ggobi/ggally")
+#install.packages("GGally")
+library(GGally)
+data(Boston)
+
+#Explore the Boston data (Exercise 4.2)
+str(Boston)
+dim(Boston)
+summary(Boston)
+
+#Graphical Overview of data (Exercise 4.3)
+pairs(Boston)
+
+#Calculate the correlation of variables in the matrix
+cor_matrix <- cor(Boston)%>%round(digits = 2)
+#print correlation matrix
+cor_matrix
+#visualize the correlation matrix
+corrplot(cor_matrix, metho="circle", type="upper", cl.pos="b", tl.pos="d", tl.cex = 0.6)
+
+#Another package for correlation matrix
+# calculate the correlation matrix and round it
+cor_matrix_gg <- ggcorr(Boston, palette = "RdBu", label = TRUE)
+cor_matrix_gg
+
+```
+
+*Description of Boston Data:*  
+Bostan data is about the housing values in suburbs.This data is having 506 rows and 14 columns (using dim()), the columns are explained below,    
+crim - per capita crime rate by town, zn - proportion of residential land zoned for lots over 25,000 sq.ft., indus - proportion of non-retail business acres per town, chas - Charles River dummy variable (= 1 if tract bounds river; 0 otherwise), nox - nitrogen oxides concentration (parts per 10 million), rm - average number of rooms per dwelling, age - proportion of owner-occupied units built prior to 1940, dis - weighted mean of distances to five Boston employment centres, rad - index of accessibility to radial highways, tax - full-value property-tax rate per \$10,000, ptration - pupil-teacher ratio by town, pratio - pupil-teacher ratio by town, black - 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town, lstat - lower status of the population (percent), medv - median value of owner-occupied homes in \$1000s.  
+  
+*Boston Data Variables Interpretation from Data Exploration and Graphical Plots:*  
+From str() command we can see all the variables in the files are numeric or integer.  
+From summary() we can see minimum, maximum, medium, 1st and 3rd quartile of each varibales. For example, the crime rate ranges from minimum of 0.006 and maximum is 88.97, maximum of 27.74 proportion of non-retail busincess acer in boston, each housing has minimum of 3 room numbers to maximum of 8 rooms, the owners had them with different time points from minimum of 2.9 to maximum of 100 and so on.  
+
+The relationship between two dataset or variables in one data can be explained by the correlation among them. To define briefly, When two sets of data are strongly linked together we say they have a High Correlation. The word Correlation is made of Co- (meaning "together"), and Relation. Correlation is Positive when the values increase together, and. Correlation is Negative when one value decreases as the other increases.  
+
+From graphical plot pairs(), corrplot(), ggcor() which are from the correlation matrix, we can see some of the parameters are correlated either positively or negatively.  
+
+For example from the correlation plots we can clearly see,  
+crim is postively correlated with rad and tax,  
+zn is negatively correlated with indus, nox, age and postively correlated with dis  
+nox is postively correlated with age, rad, tax, istat and negatively correlated with dis, medv and so on.  
+
+From correlation plot we will be able to see clearly than the pairs, also ggcor cor also gives us the correlation values.  
+########################################################################################################################
+
+4. Standardize the dataset and print out summaries of the scaled data. How did the variables change? Create a categorical variable of the crime rate in the Boston dataset (from the scaled crime rate). Use the quantiles as the break points in the categorical variable. Drop the old crime rate variable from the dataset. Divide the dataset to train and test sets, so that 80% of the data belongs to the train set. (0-2 points)
+```{r scale_the_data}
+#standardize the dataset
+boston_scaled <- scale(Boston) #in scaling the outlier are removed
+summary(boston_scaled)
+class(boston_scaled)
+boston_scaled <- as.data.frame(boston_scaled)
+
+#Create the catagorical variable of crime rate from scaled data
+#create the quantile vector
+bins <- quantile(boston_scaled$crim)
+bins
+
+#create the categorical variable of crime
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, labels = c("low", "med_low", "med_high", "high"))
+
+# look at the table of the new factor crime
+table(crime)
+
+# remove original crim from the dataset
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+
+# add the new categorical value to scaled data
+boston_scaled <- data.frame(boston_scaled, crime)
+# boston_scaled is available
+
+# number of rows in the Boston dataset 
+n <- nrow(boston_scaled)
+
+# choose randomly 80% of the rows
+ind <- sample(n,  size = n * 0.8)
+
+# create train set
+train <- boston_scaled[ind,]
+
+# create test set 
+test <- boston_scaled[-ind,]
+
+# save the correct classes from test data
+correct_classes <- test$crime
+
+# remove the crime variable from test data
+test <- dplyr::select(test, -crime)
+
+#Check the structure of the new test data
+str(boston_scaled)
+dim(boston_scaled)
+
+```
+*Scaling Results:*
+The scaling of data is important for data analysis, it remove the oulier and scale the data to fit in a modle, in this way we will avoid the bias in data analysis.  
+AS result of scaling we can see changes in maximum, minimum, 1st, 3rd quartile, mean and median of variables.  
+For example The max() of crime rate from 88.9 decreased to 9.92.  
+Then in this data, we know all the variables are numeric/integer, we are changing the crime rate as catagorical variable and split the data into train and test to check the how well the model works. Here 80% of data belong to train set, it is done by taking 80% of rows.  
+As the result of converting the crime rate into categorical variable, now we can clearly see data into four groups where 127 row in low crime rate, 126 row in medium low crime rate, 126 row in medium high and 127 row in high crime rate. The data is almost divided equally based on the crime rate.  
+#############################################################################################################################
+
+5. Fit the linear discriminant analysis on the train set. Use the categorical crime rate as the target variable and all the other variables in the dataset as predictor variables. Draw the LDA (bi)plot. (0-3 points)  
+
+*Discussion:*
+Before going into Exercise 4.5, we have to check whether the data is having categorical variables. From str() we can clearly see one of the variable "crime" has factor with four levels of low, med_low, med_high, high which is mandatory for Linear Discriminanat Analysis.
+
+*Linear Discriminant Analysis:*  
+Linear Discriminant Analysis (LDA) is a dimensionality reduction technique. As the name implies dimensionality reduction techniques reduce the number of dimensions (i.e. variables) in a dataset while retaining as much information as possible. Discriminant analysis is used when groups are known a priori (unlike in cluster analysis). Each case must have a score on one or more quantitative predictor measures, and a score on a group measure. 
+
+```{r LDA}
+# linear discriminant analysis
+lda.fit <- lda(crime ~ ., data = train) #this train data set has 80% of data
+
+# print the lda.fit object
+lda.fit
+
+# the function for lda biplot arrows
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "orange", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+# target classes as numeric
+classes <- as.numeric(train$crime)
+
+# plot the lda results
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 1)
+
+
+```
+*LD analysis Discussion:*
+From the reduction plot, distribution of data into different clustering based on crime is clearly seen. Some of the med_high values are clustered well with high values than the manual clustering, it would be better to cluster them into high category. Also we can see other variables distribution according to crime rate in the  dimensional biplot. For example variable rad is highly correlated with high crime rate.  
+#############################################################################################################################
+
+6. Save the crime categories from the test set and then remove the categorical crime variable from the test dataset. Then predict the classes with the LDA model on the test data. Cross tabulate the results with the crime categories from the test set. Comment on the results. (0-3 points)
+```{r predict_model}
+# predict classes with test data
+lda.pred <- predict(lda.fit, newdata = test)
+
+# cross tabulate the results
+table(correct = correct_classes, predicted = lda.pred$class)
+
+#compare the total number of new corrected one to old corrected one
+
+#old uncorrected count
+table(crime)
+
+#newly corrected count
+table(correct_classes)
+
+#or number in each level in corrected ones
+lda.fit$counts
+
+
+```
+*Discussion of predicted model:*
+Manually we divide them based on numeric range, whereas through LDA analysis we can cluster the levels that is best fitted with reference to other variables in dataset. As we can see previously 127 row in low group, whereas 29 of them are corrected and 98 remain in the cluster and so on for each cluster.  
+#################################################################################################################################  
+
+7. Reload the Boston dataset and standardize the dataset (we did not do this in the Datacamp exercises, but you should scale the variables to get comparable distances). Calculate the distances between the observations. Run k-means algorithm on the dataset. Investigate what is the optimal number of clusters and run the algorithm again. Visualize the clusters (for example with the pairs() or ggpairs() functions, where the clusters are separated with colors) and interpret the results. (0-4 points)
+```{r kmeans_cluster}
+#1. load the Boston data
+library(MASS)
+data('Boston')
+
+#2. Scale the Boston Data and standardize the dataset
+scaled_Boston <- scale(Boston)
+
+#3. calculate the distances between the observations
+
+# euclidean distance matrix
+dist_eu <- dist(scaled_Boston)
+
+# look at the summary of the distances
+summary(dist_eu)
+
+# manhattan distance matrix
+dist_man <- dist(Boston, method = 'manhattan')
+
+# look at the summary of the distances
+summary(dist_man)
+
+#without scaling we get the following answer
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  1.119  85.624 170.539 226.315 371.950 626.047 
+#    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+#   2.016  149.145  279.505  342.899  509.707 1198.265 
+
+#4. Run K-means cluster
+# k-means clustering
+km <-kmeans(scaled_Boston, centers = 4)
+
+# plot the Boston dataset with clusters
+pairs(scaled_Boston, col = km$cluster)
+
+```
+
+*Discussion:*  
+From the above kmeans clustering, the data is clustered based on the distance of variables. The pairs plot shows us the distrubution of clusters in each variable. Here i have divied into four center and it is showen in four different colors as seen in the picture. This clustering differ from LD analysis, which was done based on the catagorical variable wheres this is unsupervised clustering based on distance.  
+
+Super-Bonus: Run the code below for the (scaled) train data that you used to fit the LDA. The code creates a matrix product, which is a projection of the data points.  
+
+```{r bonus}
+model_predictors <- dplyr::select(train, -crime)
+# check the dimensions
+dim(model_predictors)
+dim(lda.fit$scaling)
+# matrix multiplication
+matrix_product <- as.matrix(model_predictors) %*% lda.fit$scaling
+matrix_product <- as.data.frame(matrix_product)
+#install.packages("plotly")
+library(plotly)
+
+plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers', color = train$crime)
+
+
+```
+
