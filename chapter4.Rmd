@@ -1,4 +1,4 @@
-#Clustering and classification
+##*Clustering and classification*
 *Aarthi Ravindran.20/11/2019 - RStudio Exercise 4: Tasks and Instructions*
 
 Analysis Exercises - 15 marks
