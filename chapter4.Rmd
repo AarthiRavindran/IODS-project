@@ -1,7 +1,7 @@
 ##*Clustering and classification*
 *Aarthi Ravindran.20/11/2019 - RStudio Exercise 4: Tasks and Instructions*
 Note: for exercise 5 data wraningling please check the below link
-
+[https://github.com/AarthiRavindran/IODS-project/blob/master/create_human.R]  
 Analysis Exercises - 15 marks
 
 1. Create chapter4.Rmd file and include the child file in ‘index.Rmd’ file.
